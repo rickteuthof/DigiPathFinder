@@ -1,29 +1,32 @@
 import json
 
+import matplotlib.pyplot as plt
 import networkx as nx
 
 G = nx.MultiDiGraph()
 
-with open('digiData.json') as json_file:
-    digimon = json.load(json_file)
+with open('database.json') as json_file:
+    database = json.load(json_file)
+
+for cur_name in database.keys():
+    for prev_name in database[cur_name]['prev']:
+        G.add_edge(cur_name, prev_name, direction='down')
+
+    for next_name in database[cur_name]['next'].keys():
+        G.add_edge(cur_name, next_name, direction='up')
 
 
-for i in digimon.keys():
-    for p in digimon[i]['neighBours']['prev']:
-        G.add_edge(digimon[i]['name'], digimon[p]['name'], direction='down')
+def get_path(digimon1, digimon2):
+    path = nx.shortest_path(G, digimon1, digimon2)
+    print(path[0])
+    for i in range(len(path) - 1):
+        direction = G.get_edge_data(path[i], path[i+1])[0]['direction']
+        print(direction)
+        print(path[i+1])
 
-    for n in digimon[i]['neighBours']['next']:
-        G.add_edge(digimon[i]['name'], digimon[n]['name'], direction='up')
 
-path = nx.shortest_path(G, 'LadyDevimon', 'Angewomon')
-
-print(path[0])
-for i in range(len(path) - 1):
-    direction = G.get_edge_data(path[i], path[i+1])[0]['direction']
-    print(direction)
-    print(path[i+1])
-
-# pos = nx.kamada_kawai_layout(G)
+get_path('Clockmon', 'Angewomon')
+# pos = nx.spring_layout(G)
 # nx.draw(G, pos)
 # labels = nx.draw_networkx_labels(G, pos)
 # plt.show()
