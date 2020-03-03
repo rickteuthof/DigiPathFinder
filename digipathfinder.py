@@ -31,11 +31,11 @@ with open('skill_database.json', 'w') as fp:
     json.dump(skill_database, fp)
 
 
-def get_path(start, end):
-    path = nx.shortest_path(G, start, end)
-    for i in range(len(path) - 1):
-        direction = G.get_edge_data(path[i], path[i+1])[0]['direction']
-        print("%s -> %s -> %s" % (path[i], direction, path[i+1]))
+# def get_path(start, end):
+#     path = nx.shortest_path(G, start, end)
+#     for i in range(len(path) - 1):
+#         direction = G.get_edge_data(path[i], path[i+1])[0]['direction']
+#         print("%s -> %s -> %s" % (path[i], direction, path[i+1]))
 
 
 def get_path_with_skills(start, end, withskills=[]):
@@ -44,7 +44,10 @@ def get_path_with_skills(start, end, withskills=[]):
         nodes.append(skill_database[skill][0][0])
     nodes.append(end)
     for start, end, skill in zip(nodes[:-1], nodes[1:], withskills+['']):
-        get_path(start, end)
+        path = nx.shortest_path(G, start, end)
+        for i in range(len(path) - 1):
+            direction = G.get_edge_data(path[i], path[i+1])[0]['direction']
+            print("%s -> %s -> %s" % (path[i], direction, path[i+1]))
         if skill:
             print("Get skill %s" % skill)
 
